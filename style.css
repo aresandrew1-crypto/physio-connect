@@ -186,3 +186,23 @@ footer {
     padding: 40px 18px;
   }
 }
+
+
+/* Hide account sections when logged in or out */
+[hidden] {
+  display: none !important;
+}
+
+#patientDashboard {
+  max-width: 480px;
+  margin: 25px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 16px #00000012;
+}
+
+#authMessage {
+  max-width: 480px;
+  margin: 15px auto;
+}
