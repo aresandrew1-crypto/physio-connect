@@ -18,6 +18,7 @@
         <a href="#services">Services</a>
         <a href="#booking">Book Now</a>
         <a href="#join">Join Us</a>
+        <a href="#patient-account">Patient Login</a>
       </div>
     </nav>
   </header>
@@ -120,6 +121,66 @@
            role="status"></p>
       </form>
     </section>
+<section id="patient-account" class="section form-section">
+  <h2>Patient Account</h2>
+  <p>Register or sign in to manage your profile.</p>
+
+  <div id="authForms">
+    <form id="signupForm">
+      <h3>Create Patient Account</h3>
+
+      <label for="signupName">Full Name</label>
+      <input id="signupName" type="text"
+             minlength="2" maxlength="100" required>
+
+      <label for="signupArea">Service Area</label>
+      <input id="signupArea" type="text"
+             minlength="2" maxlength="150" required>
+
+      <label for="signupEmail">Email</label>
+      <input id="signupEmail" type="email"
+             autocomplete="email" required>
+
+      <label for="signupPassword">Password</label>
+      <input id="signupPassword" type="password"
+             minlength="12"
+             autocomplete="new-password" required>
+
+      <button class="btn" type="submit">
+        Create Account
+      </button>
+    </form>
+
+    <form id="loginForm">
+      <h3>Patient Login</h3>
+
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email"
+             autocomplete="email" required>
+
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password"
+             autocomplete="current-password" required>
+
+      <button class="btn" type="submit">
+        Login
+      </button>
+    </form>
+  </div>
+
+  <div id="patientDashboard" hidden>
+    <h3>My Patient Dashboard</h3>
+    <p id="welcomePatient"></p>
+    <p id="patientArea"></p>
+    <button id="logoutButton" class="btn">
+      Logout
+    </button>
+  </div>
+
+  <p id="authMessage" class="message"
+     role="status" aria-live="polite"></p>
+</section>
+
   </main>
 
   <footer>
