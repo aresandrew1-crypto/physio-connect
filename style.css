@@ -1,0 +1,188 @@
+
+:root {
+  --primary: #087f8c;
+  --dark: #123d50;
+  --light: #eff9fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #253746;
+  background: #ffffff;
+  line-height: 1.6;
+}
+
+.navbar {
+  background: white;
+  padding: 16px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.nav-links a {
+  color: var(--dark);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.hero {
+  background: linear-gradient(135deg, #123d50, #087f8c);
+  color: white;
+  text-align: center;
+  padding: 85px 20px;
+}
+
+.hero h1 {
+  font-size: clamp(30px, 5vw, 48px);
+  max-width: 750px;
+  margin: 0 auto 20px;
+}
+
+.hero p {
+  max-width: 600px;
+  margin: 0 auto 25px;
+}
+
+.btn {
+  display: inline-block;
+  background: #12a8a1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 22px;
+  margin: 8px 5px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #087f8c;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid white;
+}
+
+.section {
+  padding: 55px 6%;
+  text-align: center;
+}
+
+.section h2 {
+  color: var(--dark);
+  font-size: 30px;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 30px auto;
+}
+
+.service-card {
+  background: var(--light);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #00000010;
+}
+
+.service-icon {
+  font-size: 36px;
+}
+
+.service-card h3 {
+  color: var(--dark);
+}
+
+.form-section {
+  background: #f5fafb;
+}
+
+form {
+  max-width: 480px;
+  margin: 25px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 16px #00000012;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin: 12px 0 5px;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #b8cbd1;
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+form .btn {
+  width: 100%;
+  margin: 22px 0 5px;
+}
+
+.message {
+  color: #087f8c;
+  font-weight: bold;
+}
+
+footer {
+  background: var(--dark);
+  color: white;
+  text-align: center;
+  padding: 25px;
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    justify-content: center;
+  }
+
+  .nav-links {
+    justify-content: center;
+  }
+
+  .hero {
+    padding: 60px 18px;
+  }
+
+  .section {
+    padding: 40px 18px;
+  }
+}
