@@ -96,34 +96,92 @@
       </form>
     </section>
 
-    <section id="join" class="section form-section">
-      <h2>Join as a Physiotherapist</h2>
-      <p>Demo registration — do not upload real documents.</p>
+<section id="join" class="section form-section">
 
-      <form id="physioForm">
-        <label for="physioName">Full Name</label>
-        <input id="physioName" type="text"
-               placeholder="Demo Physiotherapist" required>
+  <h2>Physiotherapist Portal</h2>
+  <p>Register and apply to join our healthcare network.</p>
+  <p>Development prototype. Use test information only.</p>
 
-        <label for="qualification">Qualification</label>
-        <select id="qualification" required>
-          <option value="">Select qualification</option>
-          <option>BPT</option>
-          <option>MPT</option>
-          <option>Other</option>
-        </select>
+  <div id="physioAuthForms">
 
-        <label for="physioCity">Service Area</label>
-        <input id="physioCity" type="text"
-               placeholder="Example Area" required>
+    <form id="physioSignupForm">
+      <h3>Create Physiotherapist Account</h3>
 
-        <button type="submit" class="btn">
-          Try Demo Registration
-        </button>
-        <p id="physioMessage" class="message"
-           role="status"></p>
-      </form>
-    </section>
+      <label for="physioName">Full Name</label>
+      <input id="physioName" type="text"
+             minlength="2" maxlength="100" required>
+
+      <label for="qualification">Qualification</label>
+      <select id="qualification" required>
+        <option value="">Select Qualification</option>
+        <option>BPT</option>
+        <option>MPT</option>
+        <option>Other</option>
+      </select>
+
+      <label for="physioCity">Service Area</label>
+      <input id="physioCity" type="text"
+             minlength="2" maxlength="150" required>
+
+      <label for="physioEmail">Email</label>
+      <input id="physioEmail" type="email"
+             autocomplete="email" required>
+
+      <label for="physioPassword">Password</label>
+      <input id="physioPassword" type="password"
+             minlength="12"
+             autocomplete="new-password" required>
+
+      <button class="btn" type="submit">
+        Create Physiotherapist Account
+      </button>
+    </form>
+
+    <form id="physioLoginForm">
+      <h3>Physiotherapist Login</h3>
+
+      <label for="physioLoginEmail">Email</label>
+      <input id="physioLoginEmail" type="email"
+             autocomplete="email" required>
+
+      <label for="physioLoginPassword">Password</label>
+      <input id="physioLoginPassword" type="password"
+             autocomplete="current-password" required>
+
+      <button class="btn" type="submit">
+        Login
+      </button>
+    </form>
+
+  </div>
+
+  <div id="physioDashboard" hidden>
+    <h3>My Physiotherapist Dashboard</h3>
+
+    <p id="physioWelcome"></p>
+    <p id="physioQualification"></p>
+    <p id="physioArea"></p>
+    <p id="physioStatus"></p>
+    <p id="physioStatusMessage"></p>
+
+    <button id="physioRefresh" class="btn">
+      Refresh Status
+    </button>
+
+    <button id="physioLogout" class="btn">
+      Logout
+    </button>
+  </div>
+
+  <p id="physioAuthMessage" class="message"
+     role="status" aria-live="polite"></p>
+
+</section>
+
+ 
+
+      
+    
 <section id="patient-account" class="section form-section">
   <h2>Patient Account</h2>
   <p>Register or sign in to manage your profile.</p>
