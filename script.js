@@ -1,33 +1,7 @@
 
-const bookingForm = document.getElementById("bookingForm");
-const physioForm = document.getElementById("physioForm");
-const dateInput = document.getElementById("date");
-
-// Prevent choosing a date in the past.
-const today = new Date();
-const localDate = [
-  today.getFullYear(),
-  String(today.getMonth() + 1).padStart(2, "0"),
-  String(today.getDate()).padStart(2, "0")
-].join("-");
-
-dateInput.min = localDate;
-
-bookingForm.addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  document.getElementById("bookingMessage").textContent =
-    "Demo successful! No real appointment was booked.";
-
-  bookingForm.reset();
-});
-
-physioForm.addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  document.getElementById("physioMessage").textContent =
-    
-// STEP 7: Supabase patient authentication
+// ========================================
+// PHYSIOCONNECT - SUPABASE CONNECTION
+// ========================================
 
 const SUPABASE_URL =https://aresandrew1-crypto.github.io/physio-connect/
   "https://YOUR-PROJECT-ID.supabase.co";
@@ -40,73 +14,133 @@ const db = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 
-const signupForm = document.getElementById("signupForm");
-const loginForm = document.getElementById("loginForm");
-const authForms = document.getElementById("authForms");
-const dashboard = document.getElementById("patientDashboard");
-const authMessage = document.getElementById("authMessage");
+const el = (id) => document.getElementById(id);
 
-function showMessage(message) {
-  authMessage.textContent = message;
+function message(id, text) {
+  el(id).textContent = text;
 }
 
-// REGISTER A NEW PATIENT
+function redirectURL() {
+  return window.location.origin +
+    window.location.pathname;
+}
 
-signupForm.addEventListener("submit", async (event) => {
+// ========================================
+// DEMO BOOKING FORM
+// ========================================
+
+const today = new Date();
+
+el("date").min = [
+  today.getFullYear(),
+  String(today.getMonth() + 1).padStart(2, "0"),
+  String(today.getDate()).padStart(2, "0")
+].join("-");
+
+el("bookingForm").addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const name = document.getElementById("signupName")
-    .value.trim();
-  const area = document.getElementById("signupArea")
-    .value.trim();
-  const email = document.getElementById("signupEmail")
-    .value.trim();
-  const password = document.getElementById("signupPassword")
-    .value;
+  message(
+    "bookingMessage",
+    "Demo successful! No real appointment was booked."
+  );
 
-  showMessage("Creating account...");
+  event.target.reset();
+});
+
+// ========================================
+// PATIENT SIGNUP
+// ========================================
+
+el("signupForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  message("authMessage", "Creating account...");
 
   const { data, error } = await db.auth.signUp({
-    email,
-    password,
+    email: el("signupEmail").value.trim(),
+    password: el("signupPassword").value,
     options: {
-      emailRedirectTo: window.location.origin +
-        window.location.pathname,
+      emailRedirectTo: redirectURL(),
       data: {
-        full_name: name,
-        service_area: area,
-        account_type: "patient"
+        account_type: "patient",
+        full_name: el("signupName").value.trim(),
+        service_area: el("signupArea").value.trim()
       }
     }
   });
 
   if (error) {
-    showMessage(error.message);
+    message("authMessage", error.message);
     return;
   }
 
-  signupForm.reset();
+  event.target.reset();
 
-  if (!data.session) {
-    showMessage(
-      "Check your email for a confirmation link. " +
-      "After confirming, return here and log in."
-    );
+  if (data.session) {
+    await loadDashboard();
   } else {
-    await loadPatientDashboard();
+    message(
+      "authMessage",
+      "Check your email to confirm your account."
+    );
   }
 });
 
-// LOGIN
+// ========================================
+// PHYSIOTHERAPIST SIGNUP
+// ========================================
 
-loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
+el("physioSignupForm").addEventListener(
+  "submit", async (event) => {
 
-  const email = document.getElementById("loginEmail").value;
-  const password =
-    document.getElementById("loginPassword").value;
+    event.preventDefault();
 
-  showMessage("Signing in...");
+    message(
+      "physioAuthMessage",
+      "Creating physiotherapist account..."
+    );
+
+    const { data, error } = await db.auth.signUp({
+      email: el("physioEmail").value.trim(),
+      password: el("physioPassword").value,
+      options: {
+        emailRedirectTo: redirectURL(),
+        data: {
+          account_type: "physiotherapist",
+          full_name: el("physioName").value.trim(),
+          qualification: el("qualification").value,
+          service_area: el("physioCity").value.trim()
+        }
+      }
+    });
+
+    if (error) {
+      message("physioAuthMessage", error.message);
+      return;
+    }
+
+    event.target.reset();
+
+    if (data.session) {
+      await loadDashboard();
+    } else {
+      message(
+        "physioAuthMessage",
+        "Check your email to confirm your account. " +
+        "Then log in to submit your application."
+      );
+    }
+  }
+);
+
+// ========================================
+// SHARED LOGIN FUNCTION
+// ========================================
+
+async function login(email, password, messageId) {
+
+  message(messageId, "Signing in...");
 
   const { error } = await db.auth.signInWithPassword({
     email,
@@ -114,103 +148,291 @@ loginForm.addEventListener("submit", async (event) => {
   });
 
   if (error) {
-    showMessage(error.message);
+    message(messageId, error.message);
     return;
   }
 
-  loginForm.reset();
-  await loadPatientDashboard();
+  await loadDashboard();
+}
+
+el("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  await login(
+    el("loginEmail").value.trim(),
+    el("loginPassword").value,
+    "authMessage"
+  );
+
+  event.target.reset();
 });
 
-// CREATE OR LOAD THE PATIENT PROFILE
+el("physioLoginForm").addEventListener(
+  "submit", async (event) => {
 
-async function loadPatientDashboard() {
-  const { data: { user }, error: userError } =
+    event.preventDefault();
+
+    await login(
+      el("physioLoginEmail").value.trim(),
+      el("physioLoginPassword").value,
+      "physioAuthMessage"
+    );
+
+    event.target.reset();
+  }
+);
+
+// ========================================
+// DASHBOARD VISIBILITY
+// ========================================
+
+function showLoggedOut() {
+  el("authForms").hidden = false;
+  el("physioAuthForms").hidden = false;
+
+  el("patientDashboard").hidden = true;
+  el("physioDashboard").hidden = true;
+
+  message("welcomePatient", "");
+  message("patientArea", "");
+  message("physioWelcome", "");
+  message("physioQualification", "");
+  message("physioArea", "");
+  message("physioStatus", "");
+  message("physioStatusMessage", "");
+}
+
+// ========================================
+// ACCOUNT ROUTING
+// ========================================
+
+async function loadDashboard() {
+
+  showLoggedOut();
+
+  const { data: { user }, error } =
     await db.auth.getUser();
 
-  if (userError || !user) {
-    authForms.hidden = false;
-    dashboard.hidden = true;
+  if (error || !user) {
     return;
   }
 
-  // Profile information comes from signup metadata.
-  // The database enforces that users can only
-  // create their own patient profile.
+  el("authForms").hidden = true;
+  el("physioAuthForms").hidden = true;
 
-  const metadata = user.user_metadata || {};
+  message("authMessage", "");
+  message("physioAuthMessage", "");
 
-  if (metadata.account_type !== "patient") {
-    await db.auth.signOut();
-    showMessage("This is not a patient account.");
-    return;
-  }
+  // Read existing database records first.
+  // These queries are restricted by RLS.
 
-  let { data: profile, error } = await db
+  const patientResult = await db
     .from("patient_profiles")
     .select("full_name, service_area")
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (!error && !profile) {
-    const result = await db
-      .from("patient_profiles")
-      .insert({
-        user_id: user.id,
-        full_name: metadata.full_name,
-        service_area: metadata.service_area
-      });
+  const physioResult = await db
+    .from("physiotherapist_applications")
+    .select("full_name, qualification, service_area, verification_status")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
-    error = result.error;
-
-    if (!error) {
-      profile = {
-        full_name: metadata.full_name,
-        service_area: metadata.service_area
-      };
-    }
+  if (patientResult.error || physioResult.error) {
+    await db.auth.signOut();
+    showLoggedOut();
+    message("authMessage", "Unable to load account.");
+    return;
   }
 
-  if (error || !profile) {
-    showMessage(
-      "Signed in, but your profile could not be loaded. " +
-      (error ? error.message : "Please contact support.")
+  if (patientResult.data && physioResult.data) {
+    await db.auth.signOut();
+    showLoggedOut();
+    message(
+      "authMessage",
+      "Multiple account profiles found. Contact support."
     );
     return;
   }
 
-  document.getElementById("welcomePatient")
-    .textContent = "Welcome, " + profile.full_name;
+  if (patientResult.data) {
+    displayPatient(patientResult.data);
+    return;
+  }
 
-  document.getElementById("patientArea")
-    .textContent = "Service area: " + profile.service_area;
+  if (physioResult.data) {
+    displayPhysio(physioResult.data);
+    return;
+  }
 
-  authForms.hidden = true;
-  dashboard.hidden = false;
-  showMessage("You are signed in.");
+  // Metadata is used only for initial onboarding.
+  // It is NOT proof of professional eligibility
+  // and does NOT grant administrator privileges.
+
+  const metadata = user.user_metadata || {};
+
+  if (metadata.account_type === "patient") {
+    await createPatient(user, metadata);
+  } else if (metadata.account_type === "physiotherapist") {
+    await createPhysio(user, metadata);
+  } else {
+    await db.auth.signOut();
+    showLoggedOut();
+    message("authMessage", "Account type not recognized.");
+  }
 }
 
+// ========================================
+// CREATE PATIENT PROFILE
+// ========================================
+
+async function createPatient(user, metadata) {
+
+  const { data, error } = await db
+    .from("patient_profiles")
+    .insert({
+      user_id: user.id,
+      full_name: metadata.full_name,
+      service_area: metadata.service_area
+    })
+    .select("full_name, service_area")
+    .single();
+
+  if (error) {
+    await db.auth.signOut();
+    showLoggedOut();
+    message("authMessage", error.message);
+    return;
+  }
+
+  displayPatient(data);
+}
+
+function displayPatient(profile) {
+
+  message(
+    "welcomePatient",
+    "Welcome, " + profile.full_name
+  );
+
+  message(
+    "patientArea",
+    "Service area: " + profile.service_area
+  );
+
+  el("patientDashboard").hidden = false;
+
+  message("authMessage", "Patient signed in.");
+}
+
+// ========================================
+// CREATE PHYSIOTHERAPIST APPLICATION
+// ========================================
+
+async function createPhysio(user, metadata) {
+
+  const { data, error } = await db
+    .from("physiotherapist_applications")
+    .insert({
+      user_id: user.id,
+      full_name: metadata.full_name,
+      qualification: metadata.qualification,
+      service_area: metadata.service_area,
+      verification_status: "pending"
+    })
+    .select(
+      "full_name, qualification, service_area, verification_status"
+    )
+    .single();
+
+  if (error) {
+    await db.auth.signOut();
+    showLoggedOut();
+    message("physioAuthMessage", error.message);
+    return;
+  }
+
+  displayPhysio(data);
+}
+
+// ========================================
+// PHYSIOTHERAPIST DASHBOARD
+// ========================================
+
+function displayPhysio(profile) {
+
+  message(
+    "physioWelcome",
+    "Welcome, " + profile.full_name
+  );
+
+  message(
+    "physioQualification",
+    "Qualification: " + profile.qualification
+  );
+
+  message(
+    "physioArea",
+    "Service area: " + profile.service_area
+  );
+
+  const status = profile.verification_status;
+
+  message(
+    "physioStatus",
+    "Verification status: " + status.toUpperCase()
+  );
+
+  el("physioStatus").className = "status-" + status;
+
+  if (status === "approved") {
+    message(
+      "physioStatusMessage",
+      "Your application is approved. Booking features are coming soon."
+    );
+  } else if (status === "rejected") {
+    message(
+      "physioStatusMessage",
+      "Your application was not approved. Contact support."
+    );
+  } else {
+    message(
+      "physioStatusMessage",
+      "Your application is awaiting administrator review."
+    );
+  }
+
+  el("physioDashboard").hidden = false;
+
+  message("physioAuthMessage", "Physiotherapist signed in.");
+}
+
+// ========================================
 // LOGOUT
+// ========================================
 
-document.getElementById("logoutButton")
-  .addEventListener("click", async () => {
-    const { error } = await db.auth.signOut();
+async function logout() {
 
-    if (error) {
-      showMessage(error.message);
-      return;
-    }
+  const { error } = await db.auth.signOut();
 
-    dashboard.hidden = true;
-    authForms.hidden = false;
-    showMessage("You have logged out.");
-  });
+  if (error) {
+    message("authMessage", error.message);
+    message("physioAuthMessage", error.message);
+    return;
+  }
 
-// CHECK EXISTING LOGIN ON PAGE LOAD
+  showLoggedOut();
 
-loadPatientDashboard();
+  message("authMessage", "You have logged out.");
+  message("physioAuthMessage", "You have logged out.");
+}
 
-    "Demo successful! No registration was submitted.";
+el("logoutButton").addEventListener("click", logout);
+el("physioLogout").addEventListener("click", logout);
 
-  physioForm.reset();
-});
+el("physioRefresh").addEventListener(
+  "click", loadDashboard
+);
+
+// Restore account after refreshing the page.
+loadDashboard();
